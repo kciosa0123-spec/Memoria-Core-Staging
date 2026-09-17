@@ -1,0 +1,17 @@
+Memoria Core Phase 3 GitHub staging package
+Status: SUCCESS
+Verified UTC: 2026-09-17T11:38:26.0861229Z
+
+Candidate source: C:\Codex\memoria-core-phase3-candidate-v2-20260917\memoria_core_phase3_toeic_candidate_v2.html
+Candidate bytes: 2226099
+Candidate SHA-256: 0f408e934595100d8e54fb55fbc9f7ce9241f47c8e3b1821d6f7af12f05994ec
+Candidate modified UTC (before and after): 2026-09-17T05:33:33.3069805Z
+Candidate source changes: 0
+
+Package index: C:\Codex\memoria-core-phase3-github-staging-package-20260917\index.html
+index.html bytes: 2226099
+index.html SHA-256: 0f408e934595100d8e54fb55fbc9f7ce9241f47c8e3b1821d6f7af12f05994ec
+Full byte comparison: IDENTICAL
+.nojekyll: present, 0 bytes
+
+Local package only. No upload, Git operations, browser tests, localStorage operations, or deployment.

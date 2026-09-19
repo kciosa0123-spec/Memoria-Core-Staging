@@ -79,6 +79,14 @@
     .btn-warning { background-color: var(--warning); }
     .btn-danger { background-color: var(--danger); }
     .btn-muted { background-color: var(--muted); }
+    #course-normal[aria-pressed="true"],
+    #course-toeic[aria-pressed="true"] {
+      background-color: var(--secondary);
+    }
+    #course-normal[aria-pressed="false"],
+    #course-toeic[aria-pressed="false"] {
+      background-color: var(--muted);
+    }
 
     .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 18px; }
     .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; }
@@ -159,7 +167,7 @@
   <div class="container">
     <section class="panel" aria-label="学習コース">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button type="button" class="btn btn-muted" id="course-normal" aria-pressed="true" onclick="switchCourseP3('normal')">通常</button>
+        <button type="button" class="btn btn-muted" id="course-normal" aria-pressed="true" onclick="switchCourseP3('normal')">Normal</button>
         <button type="button" class="btn btn-muted" id="course-toeic" aria-pressed="false" disabled onclick="switchCourseP3('toeic')">TOEIC</button>
         <button type="button" class="btn btn-primary" id="activate-toeic" onclick="requestActivationP3()">TOEIC教材を有効化</button>
       </div>
@@ -1515,7 +1523,7 @@
           candidate.legacyDeletedPresetKeys = Array.from(new Set([...candidate.legacyDeletedPresetKeys, ...stateV2.legacyDeletedPresetKeys]));
         }
         validateStateV3(compactStateV3(candidate));
-        const ok = await showConfirmDialog({ title: mode === 'merge' ? 'マージ復元しますか？' : '上書き復元しますか？', message: `通常${candidate.memberships.normal.length}件 / TOEIC${candidate.memberships.toeic.length}件の学習対象を含むデータになります。${mode === 'overwrite' ? '現在のデータを置き換えます。' : '既存データを優先し、競合元も保全します。'}\n${parsed.catalogUpdated ? 'バックアップの教材版を現在版へ更新して復元します' : ''} ${parsed.legacy ? '旧形式のため通常プリセットを補充します。' : ''}\n実行前に現在のバックアップのダウンロードを開始します。保存先での確認は必要です。学習中のキューは破棄します。`, confirmText: '復元する', danger: mode === 'overwrite' });
+        const ok = await showConfirmDialog({ title: mode === 'merge' ? 'マージ復元しますか？' : '上書き復元しますか？', message: `Normal${candidate.memberships.normal.length}件 / TOEIC${candidate.memberships.toeic.length}件の学習対象を含むデータになります。${mode === 'overwrite' ? '現在のデータを置き換えます。' : '既存データを優先し、競合元も保全します。'}\n${parsed.catalogUpdated ? 'バックアップの教材版を現在版へ更新して復元します' : ''} ${parsed.legacy ? '旧形式のためNormalプリセットを補充します。' : ''}\n実行前に現在のバックアップのダウンロードを開始します。保存先での確認は必要です。学習中のキューは破棄します。`, confirmText: '復元する', danger: mode === 'overwrite' });
         if (!ok) return;
         if(mode==='overwrite'&&stateV2.contentVersions.toeic!==null)await confirmOverwriteRecoveryP3();
         else requireV2(exportBackup({ silent: true, filenamePrefix: 'memoria-core-auto-backup-before-restore' }), '復元前バックアップを開始できませんでした');
@@ -1956,7 +1964,7 @@
     function catalogUpdateScreenP27() {
       storageStopped=true;document.querySelectorAll('nav, .container').forEach(e=>{e.inert=true;});
       document.getElementById('catalog-update')?.remove();const panel=document.createElement('section');panel.id='catalog-update';panel.className='panel';
-      panel.innerHTML='<h2 tabindex="-1">通常教材の安全な更新（2026.1 → 2026.2）</h2><p>学習履歴・編集・削除状態を保持します。更新前のcheckpointを保存し、同じファイルを再選択してください。</p><button class="btn btn-primary" id="catalog-download">1. 更新前checkpointを保存</button><label for="catalog-file">2. 保存したcheckpointを再選択</label><input type="file" id="catalog-file" accept=".json,application/json"><button class="btn btn-primary" id="catalog-commit" disabled>3. 教材を更新</button><button class="btn btn-muted" id="catalog-cancel">中断</button><p id="catalog-status" role="status" aria-live="polite"></p>';
+      panel.innerHTML='<h2 tabindex="-1">Normal教材の安全な更新（2026.1 → 2026.2）</h2><p>学習履歴・編集・削除状態を保持します。更新前のcheckpointを保存し、同じファイルを再選択してください。</p><button class="btn btn-primary" id="catalog-download">1. 更新前checkpointを保存</button><label for="catalog-file">2. 保存したcheckpointを再選択</label><input type="file" id="catalog-file" accept=".json,application/json"><button class="btn btn-primary" id="catalog-commit" disabled>3. 教材を更新</button><button class="btn btn-muted" id="catalog-cancel">中断</button><p id="catalog-status" role="status" aria-live="polite"></p>';
       document.body.prepend(panel);panel.querySelector('h2').focus();const status=panel.querySelector('#catalog-status'),commit=panel.querySelector('#catalog-commit');
       panel.querySelector('#catalog-download').onclick=async()=>{commit.disabled=true;try{downloadBackupPayload(await createCatalogCheckpointP27(),'memoria-core-catalog-update-checkpoint');status.textContent='保存したファイルを再選択してください。';}catch(e){status.textContent=e.message;}};
       panel.querySelector('#catalog-file').onchange=async event=>{commit.disabled=true;try{const file=event.target.files[0];if(!file)return;await verifyCatalogCheckpointP27(await file.text());commit.disabled=false;status.textContent='検証合格。教材を更新できます。';}catch(e){status.textContent='検証を拒否しました: '+e.message;}finally{event.target.value='';}};
@@ -2015,7 +2023,7 @@
     let freshOriginP3 = null, activationCheckpointP3 = null, activationVerifiedP3 = null;
     function activationEligibleP3(s) {
       validateStateV3(s);
-      requireV2(s.contentVersions.normal===PRESET_VERSION&&s.catalogDigests.normal===NORMAL_CATALOG_MANIFEST.digest,'通常教材を現在版へ更新してください');
+      requireV2(s.contentVersions.normal===PRESET_VERSION&&s.catalogDigests.normal===NORMAL_CATALOG_MANIFEST.digest,'Normal教材を現在版へ更新してください');
       requireV2(s.selectedCourse==='normal'&&s.contentVersions.toeic===null&&s.catalogDigests.toeic===null&&s.memberships.toeic.length===0,'TOEIC未有効状態ではありません');
       requireV2(!Object.values(s.archivePool).some(n=>n.type==='graph'&&n.body.contentVersions.toeic!==null),'保存済みTOEIC参照が存在します');
       return true;
@@ -2075,7 +2083,7 @@
         await ensureToeicCatalogP3();
         if(stateV3.contentVersions.toeic!==null)return;
         if(freshActivationP3()){
-          if(await showConfirmDialog({title:'TOEIC教材を有効化',message:'801件を追加します。同じ語89件の記憶状態は通常コースと共有します。',confirmText:'有効化'}))await finishActivationP3();
+          if(await showConfirmDialog({title:'TOEIC教材を有効化',message:'801件を追加します。同じ語89件の記憶状態はNormalコースと共有します。',confirmText:'有効化'}))await finishActivationP3();
         }else{
           if(!await showConfirmDialog({title:'TOEIC導入前のバックアップ',message:'801件を追加し、同じ語89件の記憶状態を共有します。現在のデータを保存し、ダウンロードした同じファイルを再選択してください。',confirmText:'保存して確認'}))return;
           const cp=await createActivationCheckpointP3();downloadBackupPayload(cp,'memoria-core-before-toeic');
@@ -2088,7 +2096,7 @@
       try {
         if(!input.files?.[0]||!canUseStateV2())return;
         await verifyActivationCheckpointP3(await input.files[0].text());
-        if(await showConfirmDialog({title:'TOEICを有効化しますか？',message:'導入前バックアップを確認しました。通常コースの履歴を保持して801件を追加します。',confirmText:'有効化'}))await finishActivationP3();
+        if(await showConfirmDialog({title:'TOEICを有効化しますか？',message:'導入前バックアップを確認しました。Normalコースの履歴を保持して801件を追加します。',confirmText:'有効化'}))await finishActivationP3();
       }catch(error){showToast(`有効化できません: ${error.message}`,6000);}finally{input.value='';}
     }
 
@@ -2098,8 +2106,8 @@
       for(const course of ['normal','toeic'])document.getElementById('course-'+course).setAttribute('aria-pressed',String(selected===course));
       document.getElementById('course-toeic').disabled=!active;
       document.getElementById('activate-toeic').hidden=active;
-      document.getElementById('course-current').textContent=`現在: ${selected==='normal'?'通常':'TOEIC'} / 固定教材 ${selected==='normal'?1031:801}件 / 登録 ${stateV2.memberships[selected].length}件`;
-      document.getElementById('course-note').textContent=toeicErrorP3?'TOEIC教材を検証できません。通常コースは利用できます。':'同じ語の記憶状態はコース間で共有します。教材本文はコース別です。';
+      document.getElementById('course-current').textContent=`現在: ${selected==='normal'?'Normal':'TOEIC'} / 固定教材 ${selected==='normal'?1031:801}件 / 登録 ${stateV2.memberships[selected].length}件`;
+      document.getElementById('course-note').textContent=toeicErrorP3?'TOEIC教材を検証できません。Normalコースは利用できます。':'同じ語の記憶状態はコース間で共有します。教材本文はコース別です。';
     }
     function unsavedCourseP3() {
       return editingCardId!==null||['add-category','add-word','add-meaning','add-example','add-example-trans','add-example-masked'].some(id=>document.getElementById(id)?.value?.trim());
@@ -2120,7 +2128,7 @@
         if((currentCard||learningQueue.length||unsavedCourseP3())&&!await showConfirmDialog({title:'コースを切り替えますか？',message:'学習セッションを終了し、未保存の編集・追加内容を破棄します。',confirmText:'切り替える'}))return false;
         requireV2(canUseStateV2()&&stateV2.revision===expected,'コース切替中の競合');
         await commitState(next=>{next.selectedCourse=course;return next;},expected);
-        cleanupCourseP3();showToast(`${course==='normal'?'通常':'TOEIC'}コースに切り替えました。`);document.getElementById('course-'+course).focus();return true;
+        cleanupCourseP3();showToast(`${course==='normal'?'Normal':'TOEIC'}コースに切り替えました。`);document.getElementById('course-'+course).focus();return true;
       }catch(error){reportWriteErrorV2(error);return false;}
     }
 
